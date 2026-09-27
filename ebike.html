@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>eBike Saver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage-50:#EEF5F0; --sage-100:#DCEAE0; --sage-500:#4E8267; --sage-600:#3F6A54; --sage-700:#345645;
+  --sky-50:#EFF5FA; --sky-500:#517FA6; --sky-600:#406484;
+  --clay-100:#F5DDD8; --clay-500:#B45E4C; --clay-600:#954B3C;
+  --amber-50:#FBF6EA; --amber-500:#B8923F;
+  --ink-50:#F6F8F7; --ink-100:#E9EDEB; --ink-300:#A6B4AC; --ink-400:#78897F;
+  --ink-500:#57685E; --ink-700:#2E3934; --ink-800:#212B27;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+body{margin:0;min-height:100%;background:var(--ink-50);color:var(--ink-800);font-family:'Inter',system-ui,sans-serif;}
+h1,h2,h3,.display{font-family:'Manrope',system-ui,sans-serif;}
+button{font-family:inherit;}
+button:active{transform:scale(0.98);}
+.app{max-width:440px;margin:0 auto;padding:32px 20px 40px;}
+header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;}
+.eyebrow{font-size:13px;font-weight:500;color:var(--sage-600);margin:0;}
+h1{font-size:26px;font-weight:800;color:var(--ink-800);margin:4px 0 0;}
+.sub{font-size:14px;color:var(--ink-500);margin:6px 0 0;line-height:1.5;}
+.gear{flex-shrink:0;width:40px;height:40px;border-radius:999px;background:#fff;box-shadow:0 2px 12px -2px rgba(43,70,56,.08);
+  border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:var(--ink-500);}
+
+.saved-card{background:var(--sage-600);border-radius:20px;padding:22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(43,70,56,.06),0 8px 24px -8px rgba(43,70,56,.15);}
+.saved-card .label{font-size:13px;color:rgba(255,255,255,.8);font-weight:500;}
+.saved-card .num{font-size:38px;font-weight:800;color:#fff;margin-top:4px;letter-spacing:-0.01em;}
+.saved-card .split{font-size:12.5px;color:rgba(255,255,255,.75);margin-top:8px;font-weight:500;}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.logbtn{border:none;border-radius:16px;padding:14px 6px;text-align:center;cursor:pointer;color:#fff;
+  box-shadow:0 1px 3px rgba(43,70,56,.06),0 8px 24px -8px rgba(43,70,56,.14);}
+.logbtn .t{font-family:'Manrope';font-weight:700;font-size:12.5px;display:block;line-height:1.2;}
+.logbtn .h{font-size:11px;opacity:.82;margin-top:4px;display:block;}
+.c1{background:var(--sage-600);} .c2{background:var(--sky-600);} .c3{background:var(--clay-500);}
+.c4{background:var(--amber-500);} .c5{background:var(--ink-700);} .c6{background:var(--sky-500);}
+
+.override-wrap{margin-bottom:22px;}
+.override-summary{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 0;
+  font-size:12.5px;font-weight:500;color:var(--ink-400);cursor:pointer;background:none;border:none;width:100%;}
+.override-summary.adjusted{color:var(--amber-500);font-weight:700;}
+.override-panel{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 12px -2px rgba(43,70,56,.08);}
+.override-panel label{display:block;font-size:11px;color:var(--ink-400);font-weight:600;margin-bottom:5px;}
+.override-panel input{width:100%;border:1px solid var(--ink-100);border-radius:10px;padding:10px;font-size:14px;
+  color:var(--ink-800);margin-bottom:10px;background:var(--ink-50);}
+.override-row{display:flex;gap:10px;}
+.override-row > div{flex:1;}
+.override-btns{display:flex;gap:8px;}
+.override-btns button{flex:1;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:12.5px;cursor:pointer;}
+.override-btns .apply{background:var(--ink-700);color:#fff;}
+.override-btns .cancel{background:var(--ink-100);color:var(--ink-600);}
+
+h3.sec{font-size:12px;font-weight:700;color:var(--ink-400);text-transform:uppercase;letter-spacing:.03em;margin:0 0 10px 2px;}
+.entry{display:flex;justify-content:space-between;align-items:center;background:#fff;
+  border-radius:16px;padding:14px 16px;margin-bottom:8px;box-shadow:0 2px 12px -2px rgba(43,70,56,.06);}
+.entry .t{font-family:'Manrope';font-weight:700;font-size:14px;color:var(--ink-800);}
+.entry .d{font-size:12px;color:var(--ink-400);margin-top:2px;}
+.entry .right{display:flex;align-items:center;gap:10px;}
+.entry .amt{font-weight:700;color:var(--sage-600);font-size:14px;}
+.entry .del{background:none;border:none;color:var(--ink-300);font-size:16px;cursor:pointer;padding:2px;}
+.empty{color:var(--ink-400);font-size:13px;text-align:center;padding:24px 0;}
+
+.divider{height:1px;background:var(--ink-100);margin:28px 0 20px;}
+
+.charge-card{background:#fff;border-radius:20px;padding:26px 22px;text-align:center;margin-bottom:16px;
+  box-shadow:0 1px 3px rgba(43,70,56,.06),0 8px 24px -8px rgba(43,70,56,.1);}
+.charge-lead{font-size:13px;color:var(--ink-500);margin-bottom:16px;}
+.big-btn{background:var(--sage-600);color:#fff;border:none;border-radius:16px;padding:17px;
+  font-size:16px;font-family:'Manrope';font-weight:700;width:100%;cursor:pointer;}
+.big-btn.stop{background:var(--clay-500);}
+.pct{font-family:'Manrope';font-size:40px;font-weight:800;color:var(--sage-700);display:block;margin:8px 0;}
+.charge-meta{font-size:13px;color:var(--ink-500);}
+.charge-err{font-size:12.5px;color:var(--clay-500);margin-top:8px;font-weight:600;}
+.charge-input{width:100%;background:var(--ink-50);border:1px solid var(--ink-100);border-radius:14px;
+  padding:14px;font-size:18px;text-align:center;margin-bottom:14px;color:var(--ink-800);}
+.note{background:var(--sky-50);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--ink-500);line-height:1.55;}
+.note b{color:var(--ink-700);}
+
+.banner{background:var(--sage-50);border:1px solid var(--sage-100);border-radius:14px;padding:12px 14px;
+  margin-bottom:16px;font-size:13px;color:var(--sage-700);font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.banner button{background:none;border:none;color:var(--sage-700);font-weight:700;font-size:15px;cursor:pointer;}
+
+.overlay{position:fixed;inset:0;background:rgba(23,30,27,.5);display:none;align-items:flex-end;z-index:50;}
+.overlay.active{display:flex;}
+.sheet{position:relative;background:var(--ink-50);border-radius:22px 22px 0 0;width:100%;max-width:440px;margin:0 auto;
+  padding:22px 20px calc(26px + env(safe-area-inset-bottom,0px));max-height:86vh;overflow-y:auto;}
+.sheet h2{margin:0 0 16px;font-size:18px;font-weight:800;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--ink-500);margin-bottom:6px;font-weight:600;}
+.field input{width:100%;background:#fff;border:1px solid var(--ink-100);color:var(--ink-800);
+  border-radius:12px;padding:12px;font-size:15px;}
+.field-group{background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 12px -2px rgba(43,70,56,.06);}
+.field-group .fg-title{font-size:12px;color:var(--sage-600);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.03em;}
+.row2{display:flex;gap:10px;}
+.row2 button{flex:1;border-radius:12px;padding:12px;font-weight:700;font-size:14px;cursor:pointer;border:none;font-family:'Manrope';}
+.row2 .primary{background:var(--sage-600);color:#fff;}
+.row2 .ghost{background:var(--ink-100);color:var(--ink-700);}
+.close-x{position:absolute;top:18px;right:18px;background:var(--ink-100);border:none;
+  width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;color:var(--ink-600);}
+.link-btn{background:none;border:none;color:var(--sage-600);font-weight:700;font-size:13px;cursor:pointer;padding:0;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <p class="eyebrow">Every ride, counted</p>
+      <h1>eBike Saver</h1>
+      <p class="sub">Track parking and petrol you've saved by riding — and charge on schedule.</p>
+    </div>
+    <button class="gear" onclick="openSettings()">⚙️</button>
+  </header>
+
+  <div id="banner"></div>
+
+  <div class="saved-card">
+    <div class="label">Your bike has saved you</div>
+    <div class="num" id="totalSaved">£0.00</div>
+    <div class="split" id="savedSplit"></div>
+  </div>
+
+  <div class="grid" id="logGrid"></div>
+
+  <div class="override-wrap">
+    <button class="override-summary" id="overrideSummary" onclick="toggleOverridePanel()"></button>
+    <div class="override-panel" id="overridePanel" style="display:none;">
+      <div class="override-row">
+        <div>
+          <label>Date</label>
+          <input type="date" id="ov_date">
+        </div>
+        <div>
+          <label>Journey (km)</label>
+          <input type="number" step="0.1" id="ov_km">
+        </div>
+      </div>
+      <div class="override-btns">
+        <button class="apply" onclick="applyOverride()">Apply to next log</button>
+        <button class="cancel" onclick="closeOverridePanel()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sec">Recent</h3>
+  <div id="logList"></div>
+
+  <div class="divider"></div>
+
+  <h3 class="sec">Charging</h3>
+  <div class="charge-card" id="chargeCard"></div>
+  <div class="note" id="chargeNote"></div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <button class="close-x" onclick="closeSettings()">✕</button>
+    <h2>Settings</h2>
+
+    <div class="field-group">
+      <div class="fg-title">Cost calculation</div>
+      <div class="field"><label>Parking price (£ per hour)</label><input type="number" step="0.01" id="s_parking"></div>
+      <div class="field"><label>Petrol price (£ per litre)</label><input type="number" step="0.01" id="s_petrol"></div>
+      <div class="field"><label>Vehicle economy (mpg)</label><input type="number" step="0.1" id="s_mpg"></div>
+      <div class="field"><label>Default journey length (km)</label><input type="number" step="0.1" id="s_distance"></div>
+    </div>
+
+    <div class="field-group">
+      <div class="fg-title">Charging</div>
+      <div class="field"><label>Charge to (%)</label><input type="number" id="s_chargeto"></div>
+      <div class="field"><label>Minutes per % charge</label><input type="number" step="0.1" id="s_minsperpct"></div>
+      <div class="field"><label>MacroDroid webhook URL</label><input type="text" id="s_macrodroid" placeholder="https://trigger.macrodroid.com/…/ebike"></div>
+    </div>
+
+    <div class="field-group">
+      <div class="fg-title">Log records</div>
+      <p class="sub" style="margin-top:0;margin-bottom:12px;">Review every ride and delete any you don't want.</p>
+      <button class="ghost" style="width:100%;border:none;border-radius:12px;padding:12px;font-weight:700;font-size:14px;cursor:pointer;background:var(--ink-100);color:var(--ink-700);font-family:'Manrope';" onclick="openLogsReview()">Review &amp; delete logs</button>
+    </div>
+
+    <div class="field-group">
+      <div class="fg-title">Backup</div>
+      <p class="sub" style="margin-top:0;margin-bottom:12px;" id="lastExportNote"></p>
+      <div class="row2">
+        <button class="ghost" onclick="exportLogs(true)">Export now</button>
+        <button class="ghost" onclick="document.getElementById('importFile').click()">Import</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importLogs(event)">
+    </div>
+
+    <div class="row2">
+      <button class="primary" style="width:100%" onclick="saveSettings()">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="logsOverlay" style="z-index:60;">
+  <div class="sheet">
+    <button class="close-x" onclick="closeLogsReview()">✕</button>
+    <h2>All logs</h2>
+    <div id="logsReviewList"></div>
+  </div>
+</div>
+
+<script>
+const LOG_TYPES = [
+  {key:'all_day', label:'All day', hours:9, cls:'c1'},
+  {key:'pickup_day', label:'Pick up day', hours:6, cls:'c2'},
+  {key:'half_day', label:'Half day', hours:4, cls:'c3'},
+  {key:'3_hours', label:'3 hours', hours:3, cls:'c4'},
+  {key:'under_2', label:'< 2 hours', hours:1.5, cls:'c5'},
+  {key:'no_parking', label:'No parking', hours:0, cls:'c6'},
+];
+
+const DEFAULTS = {
+  parking: 4.00, petrol: 1.50, mpg: 65, distance: 7,
+  chargeto: 80, minsperpct: 3.5, macrodroidUrl:''
+};
+
+function loadSettings(){ return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('ebike_settings')||'{}')); }
+function loadLogs(){ return JSON.parse(localStorage.getItem('ebike_logs') || '[]'); }
+function saveLogs(l){ localStorage.setItem('ebike_logs', JSON.stringify(l)); }
+
+let settings = loadSettings();
+let pendingDateStr = null; // 'YYYY-MM-DD' or null = today
+let pendingKm = null; // number or null = settings.distance
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function calcSaved(hours, km){
+  const parking = hours * settings.parking;
+  const miles = km / 1.60934;
+  const gallons = miles / settings.mpg;
+  const litres = gallons * 4.54609;
+  const petrol = litres * settings.petrol;
+  return {parking, petrol, total: parking + petrol};
+}
+
+function renderGrid(){
+  const grid = document.getElementById('logGrid');
+  grid.innerHTML = LOG_TYPES.map(t=>{
+    const km = pendingKm !== null ? pendingKm : settings.distance;
+    const val = calcSaved(t.hours, km);
+    return `<button class="logbtn ${t.cls}" onclick="addLog('${t.key}')">
+      <span class="t">${t.label}</span>
+      <span class="h">+£${val.total.toFixed(2)}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderOverrideSummary(){
+  const btn = document.getElementById('overrideSummary');
+  const isAdjusted = pendingDateStr !== null || pendingKm !== null;
+  const km = pendingKm !== null ? pendingKm : settings.distance;
+  if(isAdjusted){
+    const d = new Date((pendingDateStr || todayStr()) + 'T12:00:00');
+    const dstr = d.toLocaleDateString(undefined,{day:'numeric',month:'short'});
+    btn.className = 'override-summary adjusted';
+    btn.textContent = `Logging for ${dstr} · ${km}km — tap to change`;
+  } else {
+    btn.className = 'override-summary';
+    btn.textContent = '🗓 Forgot to log? Pick a date';
+  }
+}
+
+function toggleOverridePanel(){
+  const panel = document.getElementById('overridePanel');
+  const open = panel.style.display !== 'none';
+  if(open){ closeOverridePanel(); return; }
+  document.getElementById('ov_date').value = pendingDateStr || todayStr();
+  document.getElementById('ov_km').value = pendingKm !== null ? pendingKm : settings.distance;
+  panel.style.display = 'block';
+}
+function closeOverridePanel(){ document.getElementById('overridePanel').style.display = 'none'; }
+
+function applyOverride(){
+  const dateVal = document.getElementById('ov_date').value;
+  const kmVal = parseFloat(document.getElementById('ov_km').value);
+  pendingDateStr = (dateVal && dateVal !== todayStr()) ? dateVal : null;
+  pendingKm = (!isNaN(kmVal) && kmVal > 0 && kmVal !== settings.distance) ? kmVal : null;
+  closeOverridePanel();
+  renderOverrideSummary(); renderGrid();
+}
+
+function addLog(key){
+  const type = LOG_TYPES.find(t=>t.key===key);
+  const km = pendingKm !== null ? pendingKm : settings.distance;
+  const saved = calcSaved(type.hours, km);
+  const iso = pendingDateStr ? new Date(pendingDateStr + 'T12:00:00').toISOString() : new Date().toISOString();
+  const logs = loadLogs();
+  logs.unshift({date: iso, type:type.key, label:type.label, hours:type.hours, km, saved:saved.total, parking:saved.parking, petrol:saved.petrol});
+  saveLogs(logs);
+  pendingDateStr = null; pendingKm = null;
+  renderOverrideSummary(); renderGrid(); renderLogs(); renderTotal();
+}
+
+function deleteLog(idx){
+  const logs = loadLogs();
+  logs.splice(idx,1);
+  saveLogs(logs);
+  renderLogs(); renderTotal();
+  if(document.getElementById('logsOverlay').classList.contains('active')) renderLogsReview();
+}
+
+function openLogsReview(){
+  renderLogsReview();
+  document.getElementById('logsOverlay').classList.add('active');
+}
+function closeLogsReview(){ document.getElementById('logsOverlay').classList.remove('active'); }
+
+function renderLogsReview(){
+  const logs = loadLogs();
+  const el = document.getElementById('logsReviewList');
+  if(logs.length===0){ el.innerHTML = '<div class="empty">No rides logged yet</div>'; return; }
+  el.innerHTML = logs.map((l,i)=>logEntryHtml(l,i)).join('');
+}
+
+function renderTotal(){
+  const logs = loadLogs();
+  const total = logs.reduce((sum,l)=>sum+l.saved,0);
+  const parkingTotal = logs.reduce((sum,l)=>sum+(l.parking||0),0);
+  const petrolTotal = logs.reduce((sum,l)=>sum+(l.petrol||0),0);
+  document.getElementById('totalSaved').textContent = '£' + total.toFixed(2);
+  document.getElementById('savedSplit').textContent =
+    `Parking £${parkingTotal.toFixed(2)} · Petrol £${petrolTotal.toFixed(2)}`;
+}
+
+let logsExpanded = false;
+
+function renderLogs(){
+  const logs = loadLogs();
+  const el = document.getElementById('logList');
+  if(logs.length===0){ el.innerHTML = '<div class="empty">No rides logged yet</div>'; return; }
+  const visible = logs.slice(0, logsExpanded ? 10 : 3);
+  let html = visible.map((l,i)=>logEntryHtml(l,i)).join('');
+  if(logs.length > 3){
+    html += `<button class="link-btn" style="display:block;margin:8px auto 0;" onclick="toggleLogsView()">
+      ${logsExpanded ? 'Show less' : 'Show last 10'}</button>`;
+  }
+  el.innerHTML = html;
+}
+
+function toggleLogsView(){
+  logsExpanded = !logsExpanded;
+  renderLogs();
+}
+
+function logEntryHtml(l, i){
+  const d = new Date(l.date);
+  const dstr = d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+  return `<div class="entry">
+    <div><div class="t">${l.label}</div><div class="d">${dstr} · ${l.km}km</div></div>
+    <div class="right"><span class="amt">£${l.saved.toFixed(2)}</span><button class="del" onclick="deleteLog(${i})">✕</button></div>
+  </div>`;
+}
+
+function openSettings(){
+  document.getElementById('s_parking').value = settings.parking;
+  document.getElementById('s_petrol').value = settings.petrol;
+  document.getElementById('s_mpg').value = settings.mpg;
+  document.getElementById('s_distance').value = settings.distance;
+  document.getElementById('s_chargeto').value = settings.chargeto;
+  document.getElementById('s_minsperpct').value = settings.minsperpct;
+  document.getElementById('s_macrodroid').value = settings.macrodroidUrl;
+  const last = localStorage.getItem('ebike_last_export');
+  document.getElementById('lastExportNote').textContent = last ? 'Last export: ' + new Date(last).toLocaleString() : 'No export yet';
+  document.getElementById('settingsOverlay').classList.add('active');
+}
+function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
+
+function saveSettings(){
+  settings = {
+    parking: parseFloat(document.getElementById('s_parking').value) || 0,
+    petrol: parseFloat(document.getElementById('s_petrol').value) || 0,
+    mpg: parseFloat(document.getElementById('s_mpg').value) || 1,
+    distance: parseFloat(document.getElementById('s_distance').value) || 7,
+    chargeto: parseFloat(document.getElementById('s_chargeto').value) || 80,
+    minsperpct: parseFloat(document.getElementById('s_minsperpct').value) || 3.5,
+    macrodroidUrl: document.getElementById('s_macrodroid').value.trim(),
+  };
+  localStorage.setItem('ebike_settings', JSON.stringify(settings));
+  closeSettings();
+  renderOverrideSummary(); renderGrid(); renderLogs(); renderTotal(); renderChargeNote();
+}
+
+function exportLogs(manual){
+  try{
+    const data = {logs: loadLogs(), settings, exportedAt: new Date().toISOString()};
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'ebike-saver-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    localStorage.setItem('ebike_last_export', new Date().toISOString());
+    if(manual){ document.getElementById('lastExportNote').textContent = 'Last export: ' + new Date().toLocaleString(); }
+    return true;
+  }catch(e){ console.error(e); return false; }
+}
+
+function importLogs(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(data.logs){ saveLogs(data.logs); }
+      if(data.settings){ localStorage.setItem('ebike_settings', JSON.stringify(data.settings)); settings = loadSettings(); }
+      renderOverrideSummary(); renderGrid(); renderLogs(); renderTotal();
+      closeSettings();
+      showBanner('Logs imported successfully.');
+    }catch(e){ showBanner('Could not read that file.'); }
+  };
+  reader.readAsText(file);
+}
+
+function showBanner(msg){
+  document.getElementById('banner').innerHTML =
+    `<div class="banner"><span>${msg}</span><button onclick="document.getElementById('banner').innerHTML=''">✕</button></div>`;
+}
+
+function checkAutoExport(){
+  const last = localStorage.getItem('ebike_last_export');
+  const weekMs = 7*24*60*60*1000;
+  if(!last || (Date.now() - new Date(last).getTime()) > weekMs){
+    if(loadLogs().length > 0){
+      const ok = exportLogs(false);
+      if(ok) showBanner('Backed up your ride log automatically — check your downloads.');
+    } else {
+      localStorage.setItem('ebike_last_export', new Date().toISOString());
+    }
+  }
+}
+
+function loadCharge(){ return JSON.parse(localStorage.getItem('ebike_charge') || 'null'); }
+function saveCharge(c){ localStorage.setItem('ebike_charge', JSON.stringify(c)); }
+let chargeInterval = null;
+
+function renderCharge(){
+  const c = loadCharge();
+  const card = document.getElementById('chargeCard');
+  if(!c || !c.active){
+    card.innerHTML = `<div class="charge-lead">Ready to charge</div>
+      <input type="number" class="charge-input" id="chargeRemaining" placeholder="Current charge remaining (%)" min="0" max="100">
+      <button class="big-btn" onclick="startCharge()">⚡ Charge</button>
+      <div class="charge-err" id="chargeErr" style="display:none;"></div>`;
+    return;
+  }
+  const elapsedMin = (Date.now() - c.startedAt) / 60000;
+  const remainingMin = Math.max(0, c.durationMin - elapsedMin);
+  const progress = c.durationMin > 0 ? Math.min(1, elapsedMin / c.durationMin) : 1;
+  const estPct = Math.min(c.chargeTo, c.startPct + (c.chargeTo - c.startPct) * progress);
+
+  if(remainingMin <= 0){
+    card.innerHTML = `<div class="charge-lead">Charging complete</div>
+      <span class="pct">${Math.round(c.chargeTo)}%</span>
+      <div class="charge-meta">Turn off the plug now.</div>
+      <button class="big-btn" style="margin-top:16px;" onclick="finishCharge()">Done, plug is off</button>`;
+    if(chargeInterval){ clearInterval(chargeInterval); chargeInterval=null; }
+    return;
+  }
+
+  card.innerHTML = `<div class="charge-lead">Charging — estimated</div>
+    <span class="pct">${estPct.toFixed(0)}%</span>
+    <div class="charge-meta">${Math.ceil(remainingMin)} min remaining, to ${c.chargeTo}%</div>
+    ${!settings.macrodroidUrl ? '<div class="charge-err" style="color:var(--amber-500);">Turn the plug on now if you haven\'t already — this app isn\'t automating it.</div>' : ''}
+    <button class="big-btn stop" style="margin-top:18px;" onclick="stopCharge()">Stop charging</button>`;
+}
+
+function startCharge(){
+  const input = document.getElementById('chargeRemaining');
+  const errEl = document.getElementById('chargeErr');
+  const pct = parseFloat(input.value);
+  if(isNaN(pct) || pct<0 || pct>100){
+    errEl.textContent = 'Enter a number between 0 and 100.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const durationMin = Math.max(0, (settings.chargeto - pct) * settings.minsperpct);
+  const durationSec = Math.round(durationMin * 60);
+  const c = {active:true, startPct:pct, chargeTo:settings.chargeto, durationMin, startedAt:Date.now()};
+  saveCharge(c);
+
+  if(settings.macrodroidUrl){
+    const base = settings.macrodroidUrl.replace(/\/$/, '');
+    const url = base + '?durationsec=' + durationSec;
+    window.open(url, '_blank');
+  }
+  startChargeTicking();
+  renderCharge();
+}
+
+function renderChargeNote(){
+  const el = document.getElementById('chargeNote');
+  if(!el) return;
+  if(settings.macrodroidUrl){
+    el.innerHTML = '<b>Automated —</b> tapping Charge sends your remaining % to MacroDroid, which switches the plug on via SmartThings and off again automatically.';
+  } else {
+    el.innerHTML = '<b>Heads up —</b> no MacroDroid webhook set in Settings yet, so this just counts down on-screen. Turn the plug on/off yourself when prompted.';
+  }
+}
+
+function stopCharge(){
+  saveCharge(null);
+  if(chargeInterval){ clearInterval(chargeInterval); chargeInterval=null; }
+  renderCharge();
+}
+function finishCharge(){ stopCharge(); }
+
+function startChargeTicking(){
+  if(chargeInterval) clearInterval(chargeInterval);
+  chargeInterval = setInterval(renderCharge, 15000);
+}
+
+function init(){
+  renderOverrideSummary(); renderGrid(); renderLogs(); renderTotal(); renderCharge(); renderChargeNote();
+  const c = loadCharge();
+  if(c && c.active) startChargeTicking();
+  checkAutoExport();
+}
+init();
+</script>
+</body>
+</html>
